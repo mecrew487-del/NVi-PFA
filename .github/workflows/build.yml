@@ -7,7 +7,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -17,24 +18,24 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK & NDK
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
           cmdline-tools-version: 'latest'
 
-      - name: Install NDK and CMake
+      - name: Install exact NDK & CMake
         run: |
           ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653" "cmake;3.22.1"
 
-      - name: Grant execute permission for gradlew
+      - name: Grant permissions
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug -Pandroid.ndkPath=${ANDROID_HOME}/ndk/25.2.9519653
 
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: NVi-PFA-debug
+          name: app-debug
           path: app/build/outputs/apk/debug/*.apk
           
